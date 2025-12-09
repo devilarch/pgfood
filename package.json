@@ -1,0 +1,21 @@
+{
+  "name": "pgfood-api",
+  "version": "1.0.0",
+  "description": "Food Menu API Backend - Returns current meal based on IST time",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "keywords": ["food", "menu", "api"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "date-fns-tz": "^2.0.0"
+  }
+}
+
