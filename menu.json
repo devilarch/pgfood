@@ -1,37 +1,37 @@
 {
   "monday": {
-    "breakfast": ["Dal Chawal"],
-    "lunch": ["Paratha", "chana bhaji"],
+    "breakfast": ["Paratha and chana bhaji"],
+    "lunch": ["Dal Chawal"],
     "dinner": ["Matar", "roti chawal"]
   },
   "tuesday": {
-    "breakfast": ["Dal Chawal"],
-    "lunch": ["Dosa"],
+    "breakfast": ["Dosa"],
+    "lunch": ["Dal Chawal"],
     "dinner": ["Rajma chawal roti"]
   },
   "wednesday": {
-    "breakfast": ["Dal Chawal"],
-    "lunch": ["Chana gravy", "puri"],
+    "breakfast": ["Chana gravy and puri"],
+    "lunch": ["Dal Chawal"],
     "dinner": ["Egg curry", "roti", "chawal"]
   },
   "thursday": {
-    "breakfast": ["Dal Chawal"],
-    "lunch": ["Poha"],
+    "breakfast": ["Poha"],
+    "lunch": ["Dal Chawal"],
     "dinner": ["Cabbage", "dal", "rice"]
   },
   "friday": {
-    "breakfast": ["Dal Chawal"],
-    "lunch": ["Idli"],
+    "breakfast": ["Idli"],
+    "lunch": ["Dal Chawal"],
     "dinner": ["Chole bhature"]
   },
   "saturday": {
-    "breakfast": ["Dal Chawal"],
-    "lunch": ["Aloo paratha"],
+    "breakfast": ["Aloo paratha"],
+    "lunch": ["Dal Chawal"],
     "dinner": ["Veg pulao"]
   },
   "sunday": {
-    "breakfast": ["Dal Chawal"],
-    "lunch": ["Upma"],
+    "breakfast": ["Upma"],
+    "lunch": ["Dal Chawal"],
     "dinner": ["Chicken gravy", "rice", "paneer", "roti"]
   }
 }
