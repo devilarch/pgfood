@@ -22,6 +22,17 @@ function getDayOfWeek(date) {
 }
 
 /**
+ * Get next day of week in lowercase
+ * @param {Date} date - Date object
+ * @returns {string} Lowercase day name of next day
+ */
+function getNextDayOfWeek(date) {
+  const nextDay = new Date(date);
+  nextDay.setDate(nextDay.getDate() + 1);
+  return getDayOfWeek(nextDay);
+}
+
+/**
  * Determine meal period based on hour in IST
  * @param {number} hour - Hour in 24-hour format (0-23)
  * @returns {string} Meal period: 'breakfast', 'lunch', or 'dinner'
@@ -52,6 +63,7 @@ function formatISTTime(date) {
 module.exports = {
   getCurrentISTTime,
   getDayOfWeek,
+  getNextDayOfWeek,
   getMealPeriod,
   formatISTTime,
   IST_TIMEZONE

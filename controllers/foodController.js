@@ -1,4 +1,4 @@
-const { getCurrentISTTime, getDayOfWeek, getMealPeriod, formatISTTime } = require('../utils/timeUtils');
+const { getCurrentISTTime, getDayOfWeek, getNextDayOfWeek, getMealPeriod, formatISTTime } = require('../utils/timeUtils');
 const { getMenuItems } = require('../utils/menuService');
 
 /**
@@ -11,12 +11,20 @@ const getCurrentFood = (req, res) => {
     // Get current IST time
     const istTime = getCurrentISTTime();
     const hour = istTime.getHours();
-    const day = getDayOfWeek(istTime);
     
     // Determine meal period
     const meal = getMealPeriod(hour);
     
-    // Get food items for the current day and meal
+    // If it's breakfast time (10pm or later), use next day's breakfast
+    // Otherwise use current day
+    let day;
+    if (meal === 'breakfast' && hour >= 22) {
+      day = getNextDayOfWeek(istTime);
+    } else {
+      day = getDayOfWeek(istTime);
+    }
+    
+    // Get food items for the determined day and meal
     const items = getMenuItems(day, meal);
     
     // Return response
