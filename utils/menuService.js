@@ -1,17 +1,20 @@
 const fs = require('fs');
 const path = require('path');
 
+// Cache menu data in memory to avoid reading file on every request
 let menuData = null;
 
 /**
- * Load menu data from JSON file
+ * Load menu data from JSON file (cached after first load)
  * @returns {Object} Menu data object
  */
 function loadMenuData() {
+  // Return cached data if already loaded
   if (menuData) {
     return menuData;
   }
 
+  // Load menu data from file and cache it
   const menuPath = path.join(__dirname, '..', 'menu.json');
   
   try {
