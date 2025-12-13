@@ -15,10 +15,10 @@ const getCurrentFood = (req, res) => {
     // Determine meal period
     const meal = getMealPeriod(hour);
     
-    // If it's breakfast time (10pm or later), use next day's breakfast
+    // If it's breakfast time (9pm or later), use next day's breakfast
     // Otherwise use current day
     let day;
-    if (meal === 'breakfast' && hour >= 22) {
+    if (meal === 'breakfast' && hour >= 21) {
       day = getNextDayOfWeek(istTime);
     } else {
       day = getDayOfWeek(istTime);
