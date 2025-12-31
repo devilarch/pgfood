@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Menu - Terminal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+            background: #282a36;
+            color: #f8f8f2;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .terminal-container {
+            background: rgba(40, 42, 54, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(189, 147, 249, 0.3);
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #44475a;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .terminal-title {
+            color: #bd93f9;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .terminal-time {
+            color: #8be9fd;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .terminal-body {
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .terminal-line {
+            margin-bottom: 4px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .prompt {
+            color: #50fa7b;
+            margin-right: 8px;
+            user-select: none;
+        }
+
+        .command {
+            color: #f8f8f2;
+        }
+
+        .output {
+            color: #f1fa8c;
+            margin-left: 0;
+            margin-top: 4px;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        .label {
+            color: #ff79c6;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .value {
+            color: #8be9fd;
+        }
+
+        .info-row {
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .meal-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+
+        .meal-breakfast {
+            background: #ff79c6;
+            color: #282a36;
+        }
+
+        .meal-lunch {
+            background: #50fa7b;
+            color: #282a36;
+        }
+
+        .meal-dinner {
+            background: #bd93f9;
+            color: #282a36;
+        }
+
+        .food-items {
+            color: #f1fa8c;
+            margin-top: 6px;
+            padding-left: 0;
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .food-item {
+            margin: 4px 0;
+            padding: 4px 0 4px 12px;
+            border-left: 3px solid #6272a4;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #f1fa8c !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .food-item-title {
+            color: #f1fa8c;
+            font-weight: bold;
+            margin-bottom: 6px;
+            margin-top: 0;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background: #f8f8f2;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .loading {
+            color: #6272a4;
+        }
+
+        .error {
+            color: #ff5555;
+        }
+
+        .separator {
+            color: #6272a4;
+            margin: 8px 0;
+            border-top: 1px solid #44475a;
+            padding-top: 6px;
+        }
+
+        .menu-section {
+            margin-bottom: 8px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+
+            .terminal-container {
+                padding: 15px;
+            }
+
+            .terminal-header {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+            }
+
+            .terminal-title {
+                font-size: 14px;
+                letter-spacing: 0.5px;
+            }
+
+            .terminal-time {
+                font-size: 11px;
+            }
+
+            .terminal-body {
+                font-size: 13px;
+            }
+
+            .food-item {
+                font-size: 13px;
+                padding: 3px 0 3px 10px;
+            }
+
+            .info-row {
+                font-size: 13px;
+            }
+
+            .meal-badge {
+                font-size: 11px;
+                padding: 2px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .terminal-container {
+                padding: 12px;
+            }
+
+            .terminal-title {
+                font-size: 12px;
+            }
+
+            .terminal-body {
+                font-size: 12px;
+            }
+
+            .food-item {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-title">🍽️ Food Menu Terminal</div>
+            <div class="terminal-time" id="currentTime"></div>
+        </div>
+        <div class="terminal-body" id="terminalBody">
+            <div class="terminal-line">
+                <span class="prompt">$</span>
+                <span class="command">get-menu</span>
+            </div>
+            <div class="output" id="output">
+                <span class="loading">Loading menu...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dracula theme colors
+        const colors = {
+            pink: '#ff79c6',
+            cyan: '#8be9fd',
+            yellow: '#f1fa8c',
+            green: '#50fa7b',
+            purple: '#bd93f9',
+            red: '#ff5555',
+            comment: '#6272a4'
+        };
+
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        // Update time every second
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Get meal badge class
+        function getMealBadgeClass(meal) {
+            switch(meal) {
+                case 'breakfast': return 'meal-breakfast';
+                case 'lunch': return 'meal-lunch';
+                case 'dinner': return 'meal-dinner';
+                default: return '';
+            }
+        }
+
+        // Format meal name
+        function formatMealName(meal) {
+            return meal.charAt(0).toUpperCase() + meal.slice(1);
+        }
+
+        // Fetch and display menu
+        async function fetchMenu() {
+            const outputElement = document.getElementById('output');
+            
+            try {
+                const response = await fetch('/food');
+                const data = await response.json();
+                
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch menu');
+                }
+
+                // Clear output
+                outputElement.innerHTML = '';
+                
+                // Validate items array
+                if (!data.items || !Array.isArray(data.items) || data.items.length === 0) {
+                    console.error('No items in data:', data);
+                    throw new Error('No food items available');
+                }
+                
+                
+                // Create food items HTML
+                const foodItemsHTML = data.items.map(item => {
+                    return `<div class="food-item">• ${item}</div>`;
+                }).join('');
+                
+                
+                // Create output HTML
+                const outputHTML = `
+                    <div class="separator"></div>
+                    <div class="menu-section">
+                        <div class="info-row">
+                            <span class="label">Day:</span> 
+                            <span class="value">${data.day.charAt(0).toUpperCase() + data.day.slice(1)}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Meal Period:</span> 
+                            <span class="meal-badge ${getMealBadgeClass(data.meal)}">${formatMealName(data.meal)}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Current Time (IST):</span> 
+                            <span class="value">${data.time}</span>
+                        </div>
+                    </div>
+                    <div class="separator"></div>
+                    <div class="menu-section">
+                        <div class="food-item-title">Available Items:</div>
+                        <div class="food-items">${foodItemsHTML}</div>
+                    </div>
+                    <div class="separator"></div>
+                    <div style="color: ${colors.comment}; font-size: 11px; margin-top: 4px;">
+                        Menu updated at: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                    </div>
+                `;
+                
+                // Display output
+                outputElement.innerHTML = outputHTML;
+                
+                // Force reflow to ensure items are visible
+                outputElement.offsetHeight;
+                
+                
+            } catch (error) {
+                console.error('Error fetching menu:', error);
+                outputElement.innerHTML = `
+                    <div class="error">
+                        <div style="margin-bottom: 8px;">Error: ${error.message}</div>
+                        <div style="color: ${colors.comment}; font-size: 12px;">
+                            Make sure the API is running and accessible.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Fetch menu on page load
+        fetchMenu();
+    </script>
+</body>
+</html>

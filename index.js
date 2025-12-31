@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const healthRoutes = require('./routes/healthRoutes');
 const foodRoutes = require('./routes/foodRoutes');
 
@@ -8,15 +9,12 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 
-// Root route
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Root route - serve HTML page
 app.get('/', (req, res) => {
-  res.json({
-    message: 'Food Menu API',
-    endpoints: {
-      health: '/health',
-      food: '/food'
-    }
-  });
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Routes
