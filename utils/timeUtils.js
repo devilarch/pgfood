@@ -42,9 +42,9 @@ function getMealPeriod(hour) {
   // Lunch: 08:00 to 13:00 (1pm)
   // Dinner: 13:00 (1pm) to 22:00 (10pm)
   
-  if (hour >= 22 || hour < 8) {
+  if (hour >= 22 || hour < 9) {
     return 'breakfast';
-  } else if (hour >= 8 && hour < 13) {
+  } else if (hour >= 9 && hour < 13) {
     return 'lunch';
   } else {
     return 'dinner';
