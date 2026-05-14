@@ -17,12 +17,12 @@
   "thursday": {
     "breakfast": ["Poha"],
     "lunch": ["Dal Chawal"],
-    "dinner": ["Cabbage", "dal", "rice"]
+    "dinner": ["Chole", "rice"]
   },
   "friday": {
     "breakfast": ["Idli"],
     "lunch": ["Dal Chawal"],
-    "dinner": ["Chole bhature"]
+    "dinner": ["Cabbage", "rice", "Dal"]
   },
   "saturday": {
     "breakfast": ["Aloo paratha"],
