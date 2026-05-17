@@ -10,7 +10,7 @@
     "dinner": ["Rajma chawal roti"]
   },
   "wednesday": {
-    "breakfast": ["Chana gravy and puri"],
+    "breakfast": ["Poha"],
     "lunch": ["Dal Chawal"],
     "dinner": ["Egg curry", "roti", "chawal"]
   },
@@ -25,7 +25,7 @@
     "dinner": ["Cabbage", "rice", "Dal"]
   },
   "saturday": {
-    "breakfast": ["Aloo paratha"],
+    "breakfast": ["Chana gravy and puri"],
     "lunch": ["Dal Chawal"],
     "dinner": ["Veg pulao"]
   },
