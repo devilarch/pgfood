@@ -5,12 +5,12 @@
     "dinner": ["Matar", "roti chawal"]
   },
   "tuesday": {
-    "breakfast": ["Dosa"],
+    "breakfast": ["Poha"],
     "lunch": ["Dal Chawal"],
     "dinner": ["Rajma chawal roti"]
   },
   "wednesday": {
-    "breakfast": ["Poha"],
+    "breakfast": ["Dosa"],
     "lunch": ["Dal Chawal"],
     "dinner": ["Egg curry", "roti", "chawal"]
   },
