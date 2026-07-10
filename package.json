@@ -10,12 +10,19 @@
     "start": "node index.js",
     "dev": "node index.js"
   },
-  "keywords": ["food", "menu", "api"],
+  "keywords": [
+    "food",
+    "menu",
+    "api"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "date-fns-tz": "^2.0.0",
+    "dotenv": "^17.4.2",
     "express": "^4.18.2",
-    "date-fns-tz": "^2.0.0"
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.7.4"
   }
 }
-

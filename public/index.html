@@ -1,405 +1,1628 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Menu - Terminal</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-            background: #282a36;
-            color: #f8f8f2;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            overflow-x: hidden;
-        }
-
-        .terminal-container {
-            background: rgba(40, 42, 54, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 800px;
-            width: 100%;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(189, 147, 249, 0.3);
-        }
-
-        .terminal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #44475a;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .terminal-title {
-            color: #bd93f9;
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .terminal-time {
-            color: #8be9fd;
-            font-size: 12px;
-            white-space: nowrap;
-        }
-
-        .terminal-body {
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .terminal-line {
-            margin-bottom: 4px;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .prompt {
-            color: #50fa7b;
-            margin-right: 8px;
-            user-select: none;
-        }
-
-        .command {
-            color: #f8f8f2;
-        }
-
-        .output {
-            color: #f1fa8c;
-            margin-left: 0;
-            margin-top: 4px;
-            white-space: normal;
-            word-wrap: break-word;
-        }
-
-        .label {
-            color: #ff79c6;
-            font-weight: bold;
-            margin-right: 6px;
-        }
-
-        .value {
-            color: #8be9fd;
-        }
-
-        .info-row {
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .meal-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-left: 8px;
-            text-transform: uppercase;
-        }
-
-        .meal-breakfast {
-            background: #ff79c6;
-            color: #282a36;
-        }
-
-        .meal-lunch {
-            background: #50fa7b;
-            color: #282a36;
-        }
-
-        .meal-dinner {
-            background: #bd93f9;
-            color: #282a36;
-        }
-
-        .food-items {
-            color: #f1fa8c;
-            margin-top: 6px;
-            padding-left: 0;
-            display: block !important;
-            visibility: visible !important;
-        }
-
-        .food-item {
-            margin: 4px 0;
-            padding: 4px 0 4px 12px;
-            border-left: 3px solid #6272a4;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #f1fa8c !important;
-            display: block !important;
-            visibility: visible !important;
-        }
-
-        .food-item-title {
-            color: #f1fa8c;
-            font-weight: bold;
-            margin-bottom: 6px;
-            margin-top: 0;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 18px;
-            background: #f8f8f2;
-            animation: blink 1s infinite;
-            margin-left: 2px;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-
-        .loading {
-            color: #6272a4;
-        }
-
-        .error {
-            color: #ff5555;
-        }
-
-        .separator {
-            color: #6272a4;
-            margin: 8px 0;
-            border-top: 1px solid #44475a;
-            padding-top: 6px;
-        }
-
-        .menu-section {
-            margin-bottom: 8px;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-                align-items: flex-start;
-                padding-top: 20px;
-            }
-
-            .terminal-container {
-                padding: 15px;
-            }
-
-            .terminal-header {
-                flex-direction: column;
-                align-items: flex-start;
-                margin-bottom: 10px;
-                padding-bottom: 8px;
-            }
-
-            .terminal-title {
-                font-size: 14px;
-                letter-spacing: 0.5px;
-            }
-
-            .terminal-time {
-                font-size: 11px;
-            }
-
-            .terminal-body {
-                font-size: 13px;
-            }
-
-            .food-item {
-                font-size: 13px;
-                padding: 3px 0 3px 10px;
-            }
-
-            .info-row {
-                font-size: 13px;
-            }
-
-            .meal-badge {
-                font-size: 11px;
-                padding: 2px 8px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .terminal-container {
-                padding: 12px;
-            }
-
-            .terminal-title {
-                font-size: 12px;
-            }
-
-            .terminal-body {
-                font-size: 12px;
-            }
-
-            .food-item {
-                font-size: 12px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PG Food Board - Frosted Glass Menu Workspace</title>
+  <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
-    <div class="terminal-container">
-        <div class="terminal-header">
-            <div class="terminal-title">🍽️ Food Menu Terminal</div>
-            <div class="terminal-time" id="currentTime"></div>
+  <!-- Ambient background blobs -->
+  <div class="ambient-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Header Section -->
+  <header class="app-header glass-panel">
+    <a href="/" class="logo" id="logo-link">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+      </svg>
+      <span>PG Food Board</span>
+    </a>
+
+    <!-- Header Controls -->
+    <div class="header-controls">
+      <!-- Theme Switcher -->
+      <button class="btn btn-icon" id="theme-toggle" aria-label="Toggle Theme">
+        <svg id="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg id="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+
+      <!-- View Toggle (Desktop Only) -->
+      <div class="view-switch" id="view-selector">
+        <button class="view-switch-btn active" data-view="board">Board</button>
+        <button class="view-switch-btn" data-view="grid">Grid</button>
+      </div>
+
+      <!-- Favorites Filter Toggle -->
+      <button class="btn" id="fav-filter-btn">
+        <span class="star-icon">☆</span> Favorites
+      </button>
+
+      <!-- Submit New PG Button -->
+      <button class="btn btn-primary" id="open-submit-pg-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Submit PG
+      </button>
+
+      <!-- Admin Dashboard Toggle (Hidden by default) -->
+      <button class="btn" id="admin-panel-btn" style="display: none; border-color: var(--accent-orange); color: var(--accent-orange);">
+        Admin panel
+      </button>
+
+      <!-- Authentication Section -->
+      <div id="auth-section">
+        <button class="btn" id="login-btn">Login</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-container">
+    <!-- Admin Dashboard (Visible to Admins only) -->
+    <section class="admin-section glass-panel" id="admin-dashboard-container">
+      <div class="admin-header">
+        <h2 class="admin-title">Admin Moderation Dashboard</h2>
+        <button class="btn" id="close-admin-btn">Back to Board</button>
+      </div>
+      <div class="submissions-list" id="submissions-list-container">
+        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+          No pending submissions.
         </div>
-        <div class="terminal-body" id="terminalBody">
-            <div class="terminal-line">
-                <span class="prompt">$</span>
-                <span class="command">get-menu</span>
-            </div>
-            <div class="output" id="output">
-                <span class="loading">Loading menu...</span>
-            </div>
-        </div>
+      </div>
+    </section>
+
+    <!-- PGs List Container -->
+    <section id="pg-workspace-section">
+      <!-- Workspace Board (Draggable container) -->
+      <div class="workspace-board" id="board-workspace"></div>
+
+      <!-- Workspace Grid (Standard grid container, hidden initially) -->
+      <div class="workspace-grid" id="grid-workspace" style="display: none;"></div>
+    </section>
+  </main>
+
+  <!-- ==================== MODALS & DIALOGS ==================== -->
+
+  <!-- AUTH MODAL (Login/Registration) -->
+  <dialog id="auth-dialog">
+    <div class="dialog-header">
+      <h3 class="dialog-title" id="auth-dialog-title">Login</h3>
+      <button type="button" class="btn btn-icon" onclick="document.getElementById('auth-dialog').close()" style="font-size: 24px;">×</button>
+    </div>
+    <form id="auth-form" method="dialog">
+      <div class="form-group">
+        <label for="auth-username">Username</label>
+        <input type="text" class="form-control" id="auth-username" required autocomplete="username" placeholder="Enter username">
+      </div>
+      <div class="form-group">
+        <label for="auth-password">Password</label>
+        <input type="password" class="form-control" id="auth-password" required autocomplete="current-password" placeholder="Enter password">
+      </div>
+      <div id="auth-error-msg" style="color: var(--accent-red); font-size: 13px; margin-bottom: 15px; display: none;"></div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+        <span style="font-size: 13px; color: var(--text-secondary); cursor: pointer;" id="auth-toggle-mode">
+          Need an account? Register
+        </span>
+        <button type="submit" class="btn btn-primary" id="auth-submit-btn">Login</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- SUBMIT NEW PG MODAL (Multi-step Form) -->
+  <dialog id="submit-pg-dialog">
+    <div class="dialog-header">
+      <h3 class="dialog-title" id="submit-pg-title">Submit New PG</h3>
+      <button type="button" class="btn btn-icon" onclick="document.getElementById('submit-pg-dialog').close()" style="font-size: 24px;">×</button>
+    </div>
+    
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot-1"></div>
+      <div class="step-dot" id="dot-2"></div>
+      <div class="step-dot" id="dot-3" style="display: none;"></div>
     </div>
 
-    <script>
-        // Dracula theme colors
-        const colors = {
-            pink: '#ff79c6',
-            cyan: '#8be9fd',
-            yellow: '#f1fa8c',
-            green: '#50fa7b',
-            purple: '#bd93f9',
-            red: '#ff5555',
-            comment: '#6272a4'
+    <form id="submit-pg-form" method="dialog">
+      <!-- STEP 1: Basic Info -->
+      <div class="step-container active" id="step-1-container">
+        <div class="form-group">
+          <label for="new-pg-name">PG Name</label>
+          <input type="text" class="form-control" id="new-pg-name" required placeholder="e.g. Starlight PG">
+        </div>
+        <div class="form-group">
+          <label>Menu Routine Schedule</label>
+          <div class="segmented-control">
+            <div class="segmented-option">
+              <input type="radio" id="cycle-1" name="pg-cycle" value="1" checked>
+              <label for="cycle-1">1-Week Schedule</label>
+            </div>
+            <div class="segmented-option">
+              <input type="radio" id="cycle-2" name="pg-cycle" value="2">
+              <label for="cycle-2">2-Week Alternating</label>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+          <button type="button" class="btn btn-primary" id="next-step-1-btn">Next: Setup Menu</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Week 1 Food Items -->
+      <div class="step-container" id="step-2-container">
+        <h4 style="margin-bottom: 15px; font-weight: 600;">Week 1 Food Menu</h4>
+        <div class="scrollable-form-body" id="week-1-inputs">
+          <!-- Days input will be populated dynamically -->
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+          <button type="button" class="btn" id="prev-step-2-btn">Back</button>
+          <button type="button" class="btn btn-primary" id="next-step-2-btn">Next Step</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Week 2 Food Items (Only shown if cycle=2) -->
+      <div class="step-container" id="step-3-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h4 style="margin: 0; font-weight: 600;">Week 2 Food Menu</h4>
+          <button type="button" class="btn" onclick="copyWeek1ToWeek2()" style="font-size: 11px; padding: 4px 10px; border-radius: 8px;">
+            📋 Copy Week 1
+          </button>
+        </div>
+        <div class="scrollable-form-body" id="week-2-inputs">
+          <!-- Days input will be populated dynamically if cycle 2 -->
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+          <button type="button" class="btn" id="prev-step-3-btn">Back</button>
+          <button type="submit" class="btn btn-success" id="submit-pg-db-btn">Submit Menu</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- VIEW WEEKLY MENU DIALOG (Tabs for Week 1/2) -->
+  <dialog id="menu-detail-dialog">
+    <div class="dialog-header">
+      <h3 class="dialog-title" id="menu-detail-title">Weekly Food Schedule</h3>
+      <button type="button" class="btn btn-icon" onclick="document.getElementById('menu-detail-dialog').close()" style="font-size: 24px;">×</button>
+    </div>
+    
+    <div class="menu-viewer-container">
+      <div class="week-tabs" id="viewer-week-tabs" style="display: none;">
+        <button class="week-tab-btn active" id="tab-week-1-btn" onclick="switchViewerWeek(1)">Week 1</button>
+        <button class="week-tab-btn" id="tab-week-2-btn" onclick="switchViewerWeek(2)">Week 2</button>
+      </div>
+      
+      <div class="menu-rows-container" id="menu-grid-display">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Javascript Core Interactivity -->
+  <script>
+    // State Variables
+    let currentUser = null;
+    let token = localStorage.getItem('token');
+    let pgsList = [];
+    let favoritesList = [];
+    let currentView = localStorage.getItem('view') || 'board';
+    let filterFavoritesOnly = false;
+    let authMode = 'login'; // 'login' or 'register'
+    let tempSubmissionMenus = {};
+    
+    // Day/Meal translation helper based on IST rules
+    const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const MEALS = ['breakfast', 'lunch', 'dinner'];
+
+    // DOM Elements
+    const themeToggle = document.getElementById('theme-toggle');
+    const sunIcon = document.getElementById('sun-icon');
+    const moonIcon = document.getElementById('moon-icon');
+    const viewSelector = document.getElementById('view-selector');
+    const viewButtons = viewSelector.querySelectorAll('.view-switch-btn');
+    const favFilterBtn = document.getElementById('fav-filter-btn');
+    const loginBtn = document.getElementById('login-btn');
+    const authSection = document.getElementById('auth-section');
+    const authDialog = document.getElementById('auth-dialog');
+    const authForm = document.getElementById('auth-form');
+    const authTitle = document.getElementById('auth-dialog-title');
+    const authSubmitBtn = document.getElementById('auth-submit-btn');
+    const authToggleMode = document.getElementById('auth-toggle-mode');
+    const authErrorMsg = document.getElementById('auth-error-msg');
+    
+    const boardWorkspace = document.getElementById('board-workspace');
+    const gridWorkspace = document.getElementById('grid-workspace');
+    
+    const adminPanelBtn = document.getElementById('admin-panel-btn');
+    const adminDashboard = document.getElementById('admin-dashboard-container');
+    const pgWorkspaceSection = document.getElementById('pg-workspace-section');
+    const submissionsContainer = document.getElementById('submissions-list-container');
+    const closeAdminBtn = document.getElementById('close-admin-btn');
+    
+    const submitPgBtn = document.getElementById('open-submit-pg-btn');
+    const submitPgDialog = document.getElementById('submit-pg-dialog');
+    const submitPgForm = document.getElementById('submit-pg-form');
+    
+    const menuDetailDialog = document.getElementById('menu-detail-dialog');
+    
+    // Drag-and-drop state
+    let activeDraggedCard = null;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragStartCardLeft = 0;
+    let dragStartCardTop = 0;
+
+    // Initialize application
+    async function init() {
+      setupTheme();
+      setupEventListeners();
+      
+      // Auto-fetch profile if logged in
+      if (token) {
+        await fetchUserProfile();
+      } else {
+        updateAuthUI();
+      }
+      
+      await fetchPGs();
+      
+      // Force grid view on mobile
+      if (window.innerWidth <= 768) {
+        setView('grid');
+      } else {
+        setView(currentView);
+      }
+      
+      renderPGs();
+      buildFormMenuInputs();
+    }
+
+    // Set View (Board or Grid)
+    function setView(viewType) {
+      currentView = viewType;
+      localStorage.setItem('view', viewType);
+      
+      viewButtons.forEach(btn => {
+        if (btn.dataset.view === viewType) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      
+      if (viewType === 'board' && window.innerWidth > 768) {
+        boardWorkspace.style.display = 'block';
+        gridWorkspace.style.display = 'none';
+      } else {
+        boardWorkspace.style.display = 'none';
+        gridWorkspace.style.display = 'grid';
+      }
+      
+      renderPGs();
+    }
+
+    // Theme Management (Light vs Dark)
+    function setupTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'light') {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      } else {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      }
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      
+      if (newTheme === 'light') {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      } else {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      }
+    }
+
+    // Fetch Logged-in User Info
+    async function fetchUserProfile() {
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          currentUser = data.user;
+          favoritesList = currentUser.favorites || [];
+          updateAuthUI();
+        } else {
+          // Token expired or invalid
+          logout();
+        }
+      } catch (err) {
+        console.error('Error fetching user profile:', err);
+      }
+    }
+
+    // Update login state elements in UI
+    function updateAuthUI() {
+      if (currentUser) {
+        authSection.innerHTML = `
+          <div class="user-badge">
+            <span style="font-weight:600;">${currentUser.username}</span>
+            ${currentUser.role === 'admin' ? '<span class="user-badge-role">Admin</span>' : ''}
+            <button class="btn" style="padding: 4px 10px; border-radius: 12px; font-size:11px; margin-left: 10px;" id="logout-btn">Logout</button>
+          </div>
+        `;
+        document.getElementById('logout-btn').addEventListener('click', logout);
+        
+        // Show Admin button if admin
+        if (currentUser.role === 'admin') {
+          adminPanelBtn.style.display = 'inline-flex';
+        } else {
+          adminPanelBtn.style.display = 'none';
+        }
+      } else {
+        authSection.innerHTML = `<button class="btn" id="login-btn">Login</button>`;
+        document.getElementById('login-btn').addEventListener('click', () => openAuthModal('login'));
+        adminPanelBtn.style.display = 'none';
+        adminDashboard.style.display = 'none';
+        pgWorkspaceSection.style.display = 'block';
+      }
+      
+      // Update favorites filter button text/state
+      updateFavoritesFilterBtn();
+      renderPGs();
+    }
+
+    // Log out user
+    function logout() {
+      token = null;
+      currentUser = null;
+      favoritesList = [];
+      localStorage.removeItem('token');
+      updateAuthUI();
+      renderPGs();
+    }
+
+    // Fetch PGs list from DB
+    async function fetchPGs() {
+      try {
+        const response = await fetch('/api/pgs');
+        if (response.ok) {
+          pgsList = await response.json();
+        }
+      } catch (err) {
+        console.error('Error fetching PGs:', err);
+      }
+    }
+
+    // Determine current day and meal period according to IST timezone rules
+    function getCurrentISTDayAndMeal() {
+      const now = new Date();
+      
+      // Calculate IST time details using Intl.DateTimeFormat
+      const hourFormatter = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', hour: 'numeric', hour12: false });
+      const dayFormatter = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', weekday: 'long' });
+      
+      const hourIST = parseInt(hourFormatter.format(now));
+      const dayIST = dayFormatter.format(now).toLowerCase();
+      
+      let displayDay = dayIST;
+      let displayMeal = 'dinner';
+      
+      if (hourIST >= 22 || hourIST < 8) {
+        displayMeal = 'breakfast';
+        if (hourIST >= 22) {
+          // It's past 10 PM. Show next day's breakfast
+          const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+          displayDay = dayFormatter.format(tomorrow).toLowerCase();
+        }
+      } else if (hourIST >= 8 && hourIST < 13) {
+        displayMeal = 'lunch';
+      } else {
+        displayMeal = 'dinner';
+      }
+      
+      return { day: displayDay, meal: displayMeal };
+    }
+
+    // Build lists of inputs for new PG form setup
+    function buildFormMenuInputs() {
+      const week1Container = document.getElementById('week-1-inputs');
+      const week2Container = document.getElementById('week-2-inputs');
+      
+      let html1 = '';
+      let html2 = '';
+      
+      DAYS.forEach(day => {
+        // Week 1
+        html1 += `
+          <div class="form-day-row">
+            <div class="form-day-header">${day}</div>
+            <div class="form-meals-grid">
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Breakfast</label>
+                <input type="text" class="form-control" name="w1-${day}-breakfast" placeholder="e.g. Idli, Coffee">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Lunch</label>
+                <input type="text" class="form-control" name="w1-${day}-lunch" placeholder="e.g. Rice, Dal">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Dinner</label>
+                <input type="text" class="form-control" name="w1-${day}-dinner" placeholder="e.g. Roti, Matar Curry">
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Week 2
+        html2 += `
+          <div class="form-day-row">
+            <div class="form-day-header">${day} (Week 2)</div>
+            <div class="form-meals-grid">
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Breakfast</label>
+                <input type="text" class="form-control" name="w2-${day}-breakfast" placeholder="e.g. Poha, Tea">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Lunch</label>
+                <input type="text" class="form-control" name="w2-${day}-lunch" placeholder="e.g. Fried Rice">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Dinner</label>
+                <input type="text" class="form-control" name="w2-${day}-dinner" placeholder="e.g. Chicken, Rice">
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      week1Container.innerHTML = html1;
+      week2Container.innerHTML = html2;
+    }
+
+    // Copy Week 1 menu inputs to Week 2 inputs
+    function copyWeek1ToWeek2() {
+      if (!confirm('Are you sure you want to overwrite Week 2 inputs with Week 1 menu?')) {
+        return;
+      }
+      DAYS.forEach(day => {
+        ['breakfast', 'lunch', 'dinner'].forEach(meal => {
+          const w1Val = submitPgForm.querySelector(`[name="w1-${day}-${meal}"]`).value;
+          const w2Input = submitPgForm.querySelector(`[name="w2-${day}-${meal}"]`);
+          if (w2Input) {
+            w2Input.value = w1Val;
+          }
+        });
+      });
+    }
+
+    // Render PGs into board or grid view
+    function renderPGs() {
+      const { day: istDay, meal: istMeal } = getCurrentISTDayAndMeal();
+      
+      let filteredPGs = pgsList;
+      if (filterFavoritesOnly) {
+        filteredPGs = pgsList.filter(pg => favoritesList.includes(pg._id));
+      }
+      
+      // Clear containers
+      boardWorkspace.innerHTML = '';
+      gridWorkspace.innerHTML = '';
+      
+      if (filteredPGs.length === 0) {
+        const noDataHtml = `<div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--text-secondary);">No PGs to display. ${filterFavoritesOnly ? 'Try favoriting some PGs first!' : ''}</div>`;
+        boardWorkspace.innerHTML = noDataHtml;
+        gridWorkspace.innerHTML = noDataHtml;
+        return;
+      }
+      
+      const placedPositions = [];
+      
+      filteredPGs.forEach(pg => {
+        const isFav = favoritesList.includes(pg._id);
+        const cardId = `card-${pg._id}`;
+        
+        // Define admin-only delete button
+        let adminDeleteBtnHtml = '';
+        if (currentUser && currentUser.role === 'admin') {
+          adminDeleteBtnHtml = `
+            <button class="btn-delete-pg" onclick="deletePGByAdmin('${pg._id}', '${pg.name}')" title="Delete PG (Admin Only)" aria-label="Delete PG">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          `;
+        }
+        
+        // Determine today's menu list for card preview
+        let menuItems = ['No menu configured'];
+        
+        // Find if this PG supports week 2 and what week we are on. (Just default to week 1 for preview highlights)
+        if (pg.menu && pg.menu.week1 && pg.menu.week1[istDay] && pg.menu.week1[istDay][istMeal]) {
+          const items = pg.menu.week1[istDay][istMeal];
+          if (items.length > 0) menuItems = items;
+        }
+
+        const itemsListHtml = menuItems.map(item => `<div>• ${item}</div>`).join('');
+        
+        const cardHtml = `
+          <div class="pg-card glass-panel" id="${cardId}" data-id="${pg._id}">
+            <div class="pg-card-header">
+              <h4 class="pg-title">${pg.name}</h4>
+              <div class="card-actions">
+                ${adminDeleteBtnHtml}
+                <button class="btn-edit" onclick="openEditMenuModal('${pg._id}')" title="Request Menu Edit" aria-label="Edit PG">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button class="btn-star ${isFav ? 'favorited' : ''}" onclick="toggleFavorite('${pg._id}')" aria-label="Favorite PG">
+                  ${isFav ? '★' : '☆'}
+                </button>
+              </div>
+            </div>
+            <div class="pg-card-body">
+              <div class="today-highlight">
+                <div class="highlight-title">
+                  <span>Today's Meal</span>
+                  <span class="meal-label">${istMeal}</span>
+                </div>
+                <div class="meal-items">${itemsListHtml}</div>
+              </div>
+            </div>
+            <div class="pg-card-footer">
+              <span class="menu-cycle-badge">${pg.weeklyCycle} Week Routine</span>
+              <button class="btn" style="padding: 6px 12px; border-radius:10px; font-size:12px;" onclick="openWeeklyMenuModal('${pg._id}')">View Menu</button>
+            </div>
+          </div>
+        `;
+        
+        // Add to Grid view
+        const gridCardWrapper = document.createElement('div');
+        gridCardWrapper.innerHTML = cardHtml;
+        const gridCardElem = gridCardWrapper.firstElementChild;
+        
+        // Open weekly menu on clicking card (excluding buttons/stars/edits/deletes)
+        gridCardElem.addEventListener('click', (e) => {
+          if (e.target.closest('button') || e.target.closest('svg') || e.target.classList.contains('btn-star') || e.target.classList.contains('btn-edit') || e.target.classList.contains('btn-delete-pg')) {
+            return;
+          }
+          openWeeklyMenuModal(pg._id);
+        });
+        
+        gridWorkspace.appendChild(gridCardElem);
+        
+        // Add to Board view
+        const boardCard = document.createElement('div');
+        boardCard.innerHTML = cardHtml;
+        const cardElem = boardCard.firstElementChild;
+        
+        // Set coordinates with anti-overlap system
+        const savedPos = localStorage.getItem(`pg_pos_${pg._id}`);
+        let x, y;
+        if (savedPos) {
+          const pos = JSON.parse(savedPos);
+          x = pos.x;
+          y = pos.y;
+        } else {
+          // Cascade layout positions if not defined
+          const index = filteredPGs.findIndex(p => p._id === pg._id);
+          x = 30 + (index % 3) * 340;
+          y = 30 + Math.floor(index / 3) * 250;
+        }
+
+        // Anti-overlap solver (Board View only)
+        const cardWidth = 320;
+        const cardHeight = 220;
+        let attempts = 0;
+        let overlapping = true;
+        
+        while (overlapping && attempts < 100) {
+          overlapping = false;
+          for (let pos of placedPositions) {
+            // Check bounding box intersection (add 20px padding)
+            if (x < pos.x + pos.w && x + cardWidth > pos.x &&
+                y < pos.y + pos.h && y + cardHeight > pos.y) {
+              overlapping = true;
+              // Shift right
+              x += 40;
+              // Wrap lines if it overflows workspace width
+              const boardWidth = boardWorkspace.clientWidth || 1000;
+              if (x + cardWidth > boardWidth) {
+                x = 30;
+                y += 40;
+              }
+              break;
+            }
+          }
+          attempts++;
+        }
+        
+        placedPositions.push({ x, y, w: cardWidth + 20, h: cardHeight + 20 });
+        
+        cardElem.style.left = `${x}px`;
+        cardElem.style.top = `${y}px`;
+        
+        // Enable drag handlers for board layout
+        setupCardDrag(cardElem, pg._id);
+        
+        boardWorkspace.appendChild(cardElem);
+      });
+    }
+
+    // Toggle favorite state
+    async function toggleFavorite(pgId) {
+      event.stopPropagation();
+      
+      if (!currentUser) {
+        // User not logged in, prompt login
+        openAuthModal('login', `You need to log in to add PGs to your favorites.`);
+        return;
+      }
+      
+      let updatedFavs = [...favoritesList];
+      const index = updatedFavs.indexOf(pgId);
+      if (index !== -1) {
+        updatedFavs.splice(index, 1);
+      } else {
+        updatedFavs.push(pgId);
+      }
+      
+      try {
+        const response = await fetch('/api/auth/favorites', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ favorites: updatedFavs })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          favoritesList = data.favorites;
+          renderPGs();
+        }
+      } catch (err) {
+        console.error('Error updating favorites:', err);
+      }
+    }
+
+    // Delete PG by Admin
+    async function deletePGByAdmin(pgId, pgName) {
+      event.stopPropagation();
+      if (!confirm(`Are you sure you want to permanently delete "${pgName}" from the list?`)) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/pgs/${pgId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          alert('PG successfully deleted.');
+          await fetchPGs(); // Reload list
+          renderPGs(); // Re-render
+        } else {
+          alert('Failed to delete PG: ' + data.error);
+        }
+      } catch (err) {
+        console.error('Error deleting PG:', err);
+        alert('Network error. Failed to delete PG.');
+      }
+    }
+
+    // Drag-and-drop handler for board layout
+    function setupCardDrag(card, pgId) {
+      // Click handler for opening weekly menu dialog
+      card.addEventListener('click', (e) => {
+        // Prevent click if we dragged the card
+        if (card.dataset.dragged === 'true') {
+          card.removeAttribute('data-dragged');
+          return;
+        }
+        // Prevent modal if clicking button or star
+        if (e.target.closest('button') || e.target.closest('svg') || e.target.classList.contains('btn-star')) {
+          return;
+        }
+        openWeeklyMenuModal(pgId);
+      });
+
+      // Mouse down handler
+      card.addEventListener('mousedown', (e) => {
+        // Prevent drag triggers on clicking buttons inside card
+        if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) {
+          return;
+        }
+        
+        activeDraggedCard = card;
+        card.classList.add('dragging');
+        
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        
+        dragStartCardLeft = parseInt(card.style.left) || 0;
+        dragStartCardTop = parseInt(card.style.top) || 0;
+        
+        // Increase drag z-index
+        card.style.zIndex = 1000;
+        
+        document.addEventListener('mousemove', onCardDrag);
+        document.addEventListener('mouseup', onCardDragEnd);
+      });
+      
+      // Touch support
+      card.addEventListener('touchstart', (e) => {
+        if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) {
+          return;
+        }
+        
+        activeDraggedCard = card;
+        card.classList.add('dragging');
+        
+        const touch = e.touches[0];
+        dragStartX = touch.clientX;
+        dragStartY = touch.clientY;
+        
+        dragStartCardLeft = parseInt(card.style.left) || 0;
+        dragStartCardTop = parseInt(card.style.top) || 0;
+        
+        card.style.zIndex = 1000;
+        
+        document.addEventListener('touchmove', onCardTouchDrag, { passive: false });
+        document.addEventListener('touchend', onCardTouchDragEnd);
+      });
+    }
+
+    function onCardDrag(e) {
+      if (!activeDraggedCard) return;
+      
+      const deltaX = e.clientX - dragStartX;
+      const deltaY = e.clientY - dragStartY;
+      
+      if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+        activeDraggedCard.dataset.dragged = 'true';
+      }
+      
+      let newLeft = dragStartCardLeft + deltaX;
+      let newTop = dragStartCardTop + deltaY;
+      
+      // Keep boundaries inside workspace board
+      const boardWidth = boardWorkspace.clientWidth;
+      const boardHeight = boardWorkspace.clientHeight;
+      const cardWidth = activeDraggedCard.clientWidth;
+      const cardHeight = activeDraggedCard.clientHeight;
+      
+      newLeft = Math.max(0, Math.min(newLeft, boardWidth - cardWidth));
+      newTop = Math.max(0, Math.min(newTop, boardHeight - cardHeight));
+      
+      activeDraggedCard.style.left = `${newLeft}px`;
+      activeDraggedCard.style.top = `${newTop}px`;
+    }
+
+    function onCardDragEnd() {
+      if (!activeDraggedCard) return;
+      
+      activeDraggedCard.classList.remove('dragging');
+      activeDraggedCard.style.zIndex = 10;
+      
+      // Save coordinate positions in localStorage
+      const pgId = activeDraggedCard.dataset.id;
+      localStorage.setItem(`pg_pos_${pgId}`, JSON.stringify({
+        x: parseInt(activeDraggedCard.style.left),
+        y: parseInt(activeDraggedCard.style.top)
+      }));
+      
+      activeDraggedCard = null;
+      document.removeEventListener('mousemove', onCardDrag);
+      document.removeEventListener('mouseup', onCardDragEnd);
+    }
+
+    // Touch handlers mirroring mouse behaviors
+    function onCardTouchDrag(e) {
+      if (!activeDraggedCard) return;
+      e.preventDefault(); // Prevent scrolling screen while dragging cards
+      
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - dragStartX;
+      const deltaY = touch.clientY - dragStartY;
+      
+      if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+        activeDraggedCard.dataset.dragged = 'true';
+      }
+      
+      let newLeft = dragStartCardLeft + deltaX;
+      let newTop = dragStartCardTop + deltaY;
+      
+      const boardWidth = boardWorkspace.clientWidth;
+      const boardHeight = boardWorkspace.clientHeight;
+      const cardWidth = activeDraggedCard.clientWidth;
+      const cardHeight = activeDraggedCard.clientHeight;
+      
+      newLeft = Math.max(0, Math.min(newLeft, boardWidth - cardWidth));
+      newTop = Math.max(0, Math.min(newTop, boardHeight - cardHeight));
+      
+      activeDraggedCard.style.left = `${newLeft}px`;
+      activeDraggedCard.style.top = `${newTop}px`;
+    }
+
+    function onCardTouchDragEnd() {
+      if (!activeDraggedCard) return;
+      
+      activeDraggedCard.classList.remove('dragging');
+      activeDraggedCard.style.zIndex = 10;
+      
+      const pgId = activeDraggedCard.dataset.id;
+      localStorage.setItem(`pg_pos_${pgId}`, JSON.stringify({
+        x: parseInt(activeDraggedCard.style.left),
+        y: parseInt(activeDraggedCard.style.top)
+      }));
+      
+      activeDraggedCard = null;
+      document.removeEventListener('touchmove', onCardTouchDrag);
+      document.removeEventListener('touchend', onCardTouchDragEnd);
+    }
+
+    // Auth Dialog Control
+    function openAuthModal(mode, customMessage = '') {
+      authMode = mode;
+      authErrorMsg.style.display = 'none';
+      authForm.reset();
+      
+      if (customMessage) {
+        authErrorMsg.textContent = customMessage;
+        authErrorMsg.style.display = 'block';
+      }
+      
+      if (mode === 'login') {
+        authTitle.textContent = 'Login';
+        authSubmitBtn.textContent = 'Login';
+        authToggleMode.textContent = "Need an account? Register";
+      } else {
+        authTitle.textContent = 'Register';
+        authSubmitBtn.textContent = 'Register';
+        authToggleMode.textContent = "Already have an account? Login";
+      }
+      
+      authDialog.showModal();
+    }
+
+    // Toggle between login and registration in modal
+    authToggleMode.addEventListener('click', () => {
+      openAuthModal(authMode === 'login' ? 'register' : 'login');
+    });
+
+    // Handle authentication submission
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('auth-username').value;
+      const password = document.getElementById('auth-password').value;
+      
+      const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+      
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          token = data.token;
+          currentUser = data.user;
+          favoritesList = currentUser.favorites || [];
+          localStorage.setItem('token', token);
+          
+          updateAuthUI();
+          authDialog.close();
+        } else {
+          authErrorMsg.textContent = data.error || 'Authentication failed.';
+          authErrorMsg.style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Auth request error:', err);
+        authErrorMsg.textContent = 'Network error. Please try again.';
+        authErrorMsg.style.display = 'block';
+      }
+    });
+
+    // Favorites Filter Button State update
+    function updateFavoritesFilterBtn() {
+      if (filterFavoritesOnly) {
+        favFilterBtn.innerHTML = '<span class="star-icon">★</span> Favorites';
+        favFilterBtn.classList.add('btn-primary');
+      } else {
+        favFilterBtn.innerHTML = '<span class="star-icon">☆</span> Favorites';
+        favFilterBtn.classList.remove('btn-primary');
+      }
+    }
+
+    // Setup Event Listeners
+    function setupEventListeners() {
+      themeToggle.addEventListener('click', toggleTheme);
+      
+      document.getElementById('logo-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        filterFavoritesOnly = false;
+        updateFavoritesFilterBtn();
+        closeAdminPanel();
+        renderPGs();
+      });
+      
+      viewButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          closeAdminPanel();
+          setView(btn.dataset.view);
+        });
+      });
+      
+      favFilterBtn.addEventListener('click', () => {
+        filterFavoritesOnly = !filterFavoritesOnly;
+        updateFavoritesFilterBtn();
+        closeAdminPanel();
+        renderPGs();
+      });
+      
+      submitPgBtn.addEventListener('click', openNewPGModal);
+      
+      adminPanelBtn.addEventListener('click', openAdminPanel);
+      closeAdminBtn.addEventListener('click', closeAdminPanel);
+      
+      // Multi-step new PG form navigation
+      const cycleOption1 = document.getElementById('cycle-1');
+      const cycleOption2 = document.getElementById('cycle-2');
+      const dot1 = document.getElementById('dot-1');
+      const dot2 = document.getElementById('dot-2');
+      const dot3 = document.getElementById('dot-3');
+      
+      // Next Step 1 -> Step 2
+      document.getElementById('next-step-1-btn').addEventListener('click', () => {
+        const name = document.getElementById('new-pg-name').value;
+        if (!name) {
+          alert('Please enter a PG Name');
+          return;
+        }
+        
+        document.getElementById('step-1-container').classList.remove('active');
+        document.getElementById('step-2-container').classList.add('active');
+        
+        dot1.classList.remove('active');
+        dot2.classList.add('active');
+        
+        if (cycleOption2.checked) {
+          dot3.style.display = 'block';
+          document.getElementById('next-step-2-btn').textContent = 'Next: Week 2 Menu';
+        } else {
+          dot3.style.display = 'none';
+          document.getElementById('next-step-2-btn').textContent = 'Submit PG';
+        }
+      });
+      
+      // Back Step 2 -> Step 1
+      document.getElementById('prev-step-2-btn').addEventListener('click', () => {
+        document.getElementById('step-2-container').classList.remove('active');
+        document.getElementById('step-1-container').classList.add('active');
+        
+        dot2.classList.remove('active');
+        dot1.classList.add('active');
+      });
+      
+      // Next Step 2 -> Step 3 or Submit
+      document.getElementById('next-step-2-btn').addEventListener('click', () => {
+        if (cycleOption2.checked) {
+          // Show Week 2 inputs
+          document.getElementById('step-2-container').classList.remove('active');
+          document.getElementById('step-3-container').classList.add('active');
+          
+          dot2.classList.remove('active');
+          dot3.classList.add('active');
+        } else {
+          // Cycle 1, submit form
+          submitNewPGForm();
+        }
+      });
+      
+      // Back Step 3 -> Step 2
+      document.getElementById('prev-step-3-btn').addEventListener('click', () => {
+        document.getElementById('step-3-container').classList.remove('active');
+        document.getElementById('step-2-container').classList.add('active');
+        
+        dot3.classList.remove('active');
+        dot2.classList.add('active');
+      });
+      
+      // Submit form listener
+      submitPgForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitNewPGForm();
+      });
+    }
+
+    // Open submit new PG modal
+    function openNewPGModal() {
+      // Reset wizard
+      submitPgForm.reset();
+      document.getElementById('step-1-container').classList.add('active');
+      document.getElementById('step-2-container').classList.remove('active');
+      document.getElementById('step-3-container').classList.remove('active');
+      
+      document.getElementById('dot-1').classList.add('active');
+      document.getElementById('dot-2').classList.remove('active');
+      document.getElementById('dot-3').classList.remove('active');
+      document.getElementById('dot-3').style.display = 'none';
+      
+      submitPgDialog.showModal();
+    }
+
+    // Parse food items input helper
+    function parseFoodInput(val) {
+      if (!val) return [];
+      return val.split(',').map(s => s.trim()).filter(s => s.length > 0);
+    }
+
+    // Submit PG form payload building
+    async function submitNewPGForm() {
+      const name = document.getElementById('new-pg-name').value;
+      const cycleOption = document.querySelector('input[name="pg-cycle"]:checked').value;
+      const cycle = parseInt(cycleOption);
+      
+      // Build menu structure
+      const menu = {
+        week1: {},
+        week2: {}
+      };
+      
+      DAYS.forEach(day => {
+        menu.week1[day] = {
+          breakfast: parseFoodInput(submitPgForm.querySelector(`[name="w1-${day}-breakfast"]`).value),
+          lunch: parseFoodInput(submitPgForm.querySelector(`[name="w1-${day}-lunch"]`).value),
+          dinner: parseFoodInput(submitPgForm.querySelector(`[name="w1-${day}-dinner"]`).value)
         };
-
-        // Update current time
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleString('en-IN', {
-                timeZone: 'Asia/Kolkata',
-                weekday: 'short',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            });
-            document.getElementById('currentTime').textContent = timeString;
+        
+        if (cycle === 2) {
+          menu.week2[day] = {
+            breakfast: parseFoodInput(submitPgForm.querySelector(`[name="w2-${day}-breakfast"]`).value),
+            lunch: parseFoodInput(submitPgForm.querySelector(`[name="w2-${day}-lunch"]`).value),
+            dinner: parseFoodInput(submitPgForm.querySelector(`[name="w2-${day}-dinner"]`).value)
+          };
+        } else {
+          menu.week2[day] = { breakfast: [], lunch: [], dinner: [] };
         }
-
-        // Update time every second
-        updateTime();
-        setInterval(updateTime, 1000);
-
-        // Get meal badge class
-        function getMealBadgeClass(meal) {
-            switch(meal) {
-                case 'breakfast': return 'meal-breakfast';
-                case 'lunch': return 'meal-lunch';
-                case 'dinner': return 'meal-dinner';
-                default: return '';
-            }
+      });
+      
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
         }
-
-        // Format meal name
-        function formatMealName(meal) {
-            return meal.charAt(0).toUpperCase() + meal.slice(1);
+        
+        const response = await fetch('/api/pgs/submit', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ name, weeklyCycle: cycle, menu })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert('Submission successful! It has been sent to the admin moderation queue.');
+          submitPgDialog.close();
+        } else {
+          alert('Failed to submit: ' + data.error);
         }
+      } catch (err) {
+        console.error('Error submitting PG:', err);
+        alert('Network error. Failed to submit.');
+      }
+    }
 
-        // Fetch and display menu
-        async function fetchMenu() {
-            const outputElement = document.getElementById('output');
+    // Open Weekly Menu Viewer for a pending submission
+    function openWeeklyMenuForSubmission(subId, name, weeklyCycle) {
+      const menu = tempSubmissionMenus[subId];
+      if (!menu) return;
+      
+      activeViewerPG = { name, weeklyCycle, menu };
+      document.getElementById('menu-detail-title').textContent = `${name} - Proposed Schedule`;
+      
+      const tabs = document.getElementById('viewer-week-tabs');
+      if (weeklyCycle === 2) {
+        tabs.style.display = 'flex';
+        document.getElementById('tab-week-1-btn').classList.add('active');
+        document.getElementById('tab-week-2-btn').classList.remove('active');
+      } else {
+        tabs.style.display = 'none';
+      }
+      
+      renderWeeklyMenuDisplay(1);
+      menuDetailDialog.showModal();
+    }
+
+    // Open Weekly Menu Viewer Dialog
+    let activeViewerPG = null;
+    function openWeeklyMenuModal(pgId) {
+      const pg = pgsList.find(p => p._id === pgId);
+      if (!pg) return;
+      
+      activeViewerPG = pg;
+      document.getElementById('menu-detail-title').textContent = `${pg.name} - Food Schedule`;
+      
+      const tabs = document.getElementById('viewer-week-tabs');
+      if (pg.weeklyCycle === 2) {
+        tabs.style.display = 'flex';
+        document.getElementById('tab-week-1-btn').classList.add('active');
+        document.getElementById('tab-week-2-btn').classList.remove('active');
+      } else {
+        tabs.style.display = 'none';
+      }
+      
+      renderWeeklyMenuDisplay(1);
+      menuDetailDialog.showModal();
+    }
+
+    // Switch between week 1 and week 2 tab in viewer
+    function switchViewerWeek(weekNum) {
+      if (!activeViewerPG) return;
+      
+      const tab1 = document.getElementById('tab-week-1-btn');
+      const tab2 = document.getElementById('tab-week-2-btn');
+      
+      if (weekNum === 1) {
+        tab1.classList.add('active');
+        tab2.classList.remove('active');
+      } else {
+        tab2.classList.add('active');
+        tab1.classList.remove('active');
+      }
+      
+      renderWeeklyMenuDisplay(weekNum);
+    }
+    // Render list of days in weekly menu viewer (Row-based)
+    function renderWeeklyMenuDisplay(weekNum) {
+      if (!activeViewerPG || !activeViewerPG.menu) return;
+      
+      const weekKey = `week${weekNum}`;
+      const menuData = activeViewerPG.menu[weekKey] || {};
+      const container = document.getElementById('menu-grid-display');
+      
+      container.innerHTML = '';
+      
+      DAYS.forEach(day => {
+        const dayMenu = menuData[day] || { breakfast: [], lunch: [], dinner: [] };
+        
+        const breakfastStr = dayMenu.breakfast.length > 0 ? dayMenu.breakfast.join(', ') : 'Not scheduled';
+        const lunchStr = dayMenu.lunch.length > 0 ? dayMenu.lunch.join(', ') : 'Not scheduled';
+        const dinnerStr = dayMenu.dinner.length > 0 ? dayMenu.dinner.join(', ') : 'Not scheduled';
+        
+        const rowHtml = `
+          <div class="menu-day-row">
+            <div class="menu-day-label">${day}</div>
+            <div class="menu-meals-columns">
+              <div class="menu-meal-column">
+                <span class="menu-meal-title" style="color:var(--accent-blue);">Breakfast</span>
+                <span class="menu-meal-content">${breakfastStr}</span>
+              </div>
+              <div class="menu-meal-column">
+                <span class="menu-meal-title" style="color:var(--accent-green);">Lunch</span>
+                <span class="menu-meal-content">${lunchStr}</span>
+              </div>
+              <div class="menu-meal-column">
+                <span class="menu-meal-title" style="color:var(--accent-orange);">Dinner</span>
+                <span class="menu-meal-content">${dinnerStr}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        container.innerHTML += rowHtml;
+      });
+    }
+    // Open Edit Menu Request Modal (Requires prefilling forms)
+    let activeEditPGId = null;
+    function openEditMenuModal(pgId) {
+      if (!currentUser) {
+        openAuthModal('login', `You need to log in to request menu changes.`);
+        return;
+      }
+      
+      const pg = pgsList.find(p => p._id === pgId);
+      if (!pg) return;
+      
+      activeEditPGId = pgId;
+      
+      // Prefill submit new PG form but treat it as Edit
+      document.getElementById('new-pg-name').value = pg.name;
+      
+      if (pg.weeklyCycle === 2) {
+        document.getElementById('cycle-2').checked = true;
+      } else {
+        document.getElementById('cycle-1').checked = true;
+      }
+      
+      // Prefill menu inputs
+      DAYS.forEach(day => {
+        // Week 1
+        const w1 = pg.menu.week1[day] || { breakfast: [], lunch: [], dinner: [] };
+        submitPgForm.querySelector(`[name="w1-${day}-breakfast"]`).value = w1.breakfast.join(', ');
+        submitPgForm.querySelector(`[name="w1-${day}-lunch"]`).value = w1.lunch.join(', ');
+        submitPgForm.querySelector(`[name="w1-${day}-dinner"]`).value = w1.dinner.join(', ');
+        
+        // Week 2
+        const w2 = (pg.menu.week2 && pg.menu.week2[day]) ? pg.menu.week2[day] : { breakfast: [], lunch: [], dinner: [] };
+        submitPgForm.querySelector(`[name="w2-${day}-breakfast"]`).value = w2.breakfast.join(', ');
+        submitPgForm.querySelector(`[name="w2-${day}-lunch"]`).value = w2.lunch.join(', ');
+        submitPgForm.querySelector(`[name="w2-${day}-dinner"]`).value = w2.dinner.join(', ');
+      });
+      
+      // Change Wizard action to trigger Edit API
+      const prevSubmitBtn = document.getElementById('submit-pg-db-btn');
+      
+      // Create new submit handler specifically for Edit requests
+      submitPgForm.onsubmit = async (e) => {
+        e.preventDefault();
+        await submitEditRequestForm();
+      };
+      
+      // Override wizard next-step behavior for Step 2 if cycle 1
+      const nextStep2Btn = document.getElementById('next-step-2-btn');
+      
+      // Remove old listeners by cloning button
+      const newNextStep2 = nextStep2Btn.cloneNode(true);
+      nextStep2Btn.parentNode.replaceChild(newNextStep2, nextStep2Btn);
+      
+      newNextStep2.addEventListener('click', () => {
+        const cycle = document.getElementById('cycle-2').checked ? 2 : 1;
+        if (cycle === 2) {
+          document.getElementById('step-2-container').classList.remove('active');
+          document.getElementById('step-3-container').classList.add('active');
+          document.getElementById('dot-2').classList.remove('active');
+          document.getElementById('dot-3').classList.add('active');
+        } else {
+          submitEditRequestForm();
+        }
+      });
+      
+      document.getElementById('submit-pg-title').textContent = `Request Edit: ${pg.name}`;
+      
+      // Reset step indicator
+      document.getElementById('step-1-container').classList.add('active');
+      document.getElementById('step-2-container').classList.remove('active');
+      document.getElementById('step-3-container').classList.remove('active');
+      document.getElementById('dot-1').classList.add('active');
+      document.getElementById('dot-2').classList.remove('active');
+      document.getElementById('dot-3').classList.remove('active');
+      
+      if (pg.weeklyCycle === 2) {
+        document.getElementById('dot-3').style.display = 'block';
+      }
+      
+      submitPgDialog.showModal();
+    }
+
+    // Submit Edit Request payload building
+    async function submitEditRequestForm() {
+      const name = document.getElementById('new-pg-name').value;
+      const cycleOption = document.querySelector('input[name="pg-cycle"]:checked').value;
+      const cycle = parseInt(cycleOption);
+      
+      // Build menu structure
+      const menu = {
+        week1: {},
+        week2: {}
+      };
+      
+      DAYS.forEach(day => {
+        menu.week1[day] = {
+          breakfast: parseFoodInput(submitPgForm.querySelector(`[name="w1-${day}-breakfast"]`).value),
+          lunch: parseFoodInput(submitPgForm.querySelector(`[name="w1-${day}-lunch"]`).value),
+          dinner: parseFoodInput(submitPgForm.querySelector(`[name="w1-${day}-dinner"]`).value)
+        };
+        
+        if (cycle === 2) {
+          menu.week2[day] = {
+            breakfast: parseFoodInput(submitPgForm.querySelector(`[name="w2-${day}-breakfast"]`).value),
+            lunch: parseFoodInput(submitPgForm.querySelector(`[name="w2-${day}-lunch"]`).value),
+            dinner: parseFoodInput(submitPgForm.querySelector(`[name="w2-${day}-dinner"]`).value)
+          };
+        } else {
+          menu.week2[day] = { breakfast: [], lunch: [], dinner: [] };
+        }
+      });
+      
+      try {
+        const response = await fetch('/api/pgs/edit-request', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ pgId: activeEditPGId, name, weeklyCycle: cycle, menu })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert('Edit request submitted successfully! It has been sent to the admin moderation queue.');
+          submitPgDialog.close();
+          // Reset form handlers to default additions behavior
+          resetNewPGFormHandlers();
+        } else {
+          alert('Failed to submit edit: ' + data.error);
+        }
+      } catch (err) {
+        console.error('Error submitting edit PG:', err);
+        alert('Network error. Failed to submit edit request.');
+      }
+    }
+
+    // Reset PG submit modal form listeners back to adding new PG
+    function resetNewPGFormHandlers() {
+      document.getElementById('submit-pg-title').textContent = 'Submit New PG';
+      
+      submitPgForm.onsubmit = (e) => {
+        e.preventDefault();
+        submitNewPGForm();
+      };
+      
+      const nextStep2Btn = document.getElementById('next-step-2-btn');
+      const newNextStep2 = nextStep2Btn.cloneNode(true);
+      nextStep2Btn.parentNode.replaceChild(newNextStep2, nextStep2Btn);
+      
+      newNextStep2.addEventListener('click', () => {
+        const cycle = document.getElementById('cycle-2').checked ? 2 : 1;
+        if (cycle === 2) {
+          document.getElementById('step-2-container').classList.remove('active');
+          document.getElementById('step-3-container').classList.add('active');
+          document.getElementById('dot-2').classList.remove('active');
+          document.getElementById('dot-3').classList.add('active');
+        } else {
+          submitNewPGForm();
+        }
+      });
+    }
+
+    // Admin Dashboard Moderation Screen Actions
+    async function openAdminPanel() {
+      pgWorkspaceSection.style.display = 'none';
+      adminDashboard.style.display = 'block';
+      await fetchAndRenderSubmissions();
+    }
+
+    function closeAdminPanel() {
+      adminDashboard.style.display = 'none';
+      pgWorkspaceSection.style.display = 'block';
+      renderPGs();
+    }
+
+    async function fetchAndRenderSubmissions() {
+      try {
+        const response = await fetch('/api/submissions', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+          const submissions = await response.json();
+          renderSubmissionsList(submissions);
+        } else {
+          submissionsContainer.innerHTML = `<div style="text-align: center; color: var(--accent-red);">Unauthorized. Admin rights required.</div>`;
+        }
+      } catch (err) {
+        console.error('Error fetching submissions:', err);
+        submissionsContainer.innerHTML = `<div style="text-align: center; color: var(--accent-red);">Failed to load submissions.</div>`;
+      }
+    }
+
+    // Compare lists item helper for side-by-side diff displays
+    function formatMealListDiff(currentMeals, proposedMeals, isProposedColumn, isEditType = true) {
+      if (!currentMeals) currentMeals = [];
+      if (!proposedMeals) proposedMeals = [];
+      
+      if (!isEditType) {
+        const list = isProposedColumn ? proposedMeals : currentMeals;
+        if (!list || list.length === 0) return '<em style="color:var(--text-tertiary);">None</em>';
+        return list.join(', ');
+      }
+      
+      if (isProposedColumn) {
+        if (proposedMeals.length === 0) return '<em style="color:var(--text-tertiary);">None</em>';
+        return proposedMeals.map(item => {
+          const cleanItem = item.trim();
+          const isAdded = !currentMeals.some(c => c.trim().toLowerCase() === cleanItem.toLowerCase());
+          if (isAdded) {
+            return `<span style="color: var(--accent-green); font-weight: 600;">+ ${item}</span>`;
+          }
+          return item;
+        }).join(', ');
+      } else {
+        if (currentMeals.length === 0) return '<em style="color:var(--text-tertiary);">None</em>';
+        return currentMeals.map(item => {
+          const cleanItem = item.trim();
+          const isRemoved = !proposedMeals.some(p => p.trim().toLowerCase() === cleanItem.toLowerCase());
+          if (isRemoved) {
+            return `<span style="color: var(--accent-red); text-decoration: line-through;">${item}</span>`;
+          }
+          return item;
+        }).join(', ');
+      }
+    }
+
+    function renderSubmissionsList(submissions) {
+      submissionsContainer.innerHTML = '';
+      tempSubmissionMenus = {}; // Clear
+      
+      const pendingSubmissions = submissions.filter(s => s.status === 'pending');
+      
+      if (pendingSubmissions.length === 0) {
+        submissionsContainer.innerHTML = `
+          <div style="text-align: center; padding: 60px; color: var(--text-secondary);">
+            🎉 All caught up! No pending PG additions or edit requests.
+          </div>
+        `;
+        return;
+      }
+      
+      pendingSubmissions.forEach(sub => {
+        const subId = sub._id;
+        const subDate = new Date(sub.createdAt).toLocaleString();
+        tempSubmissionMenus[subId] = sub.data.menu; // Store for weekly viewer
+        
+        let subContentHtml = '';
+        
+        if (sub.type === 'new') {
+          // Displaying proposed PG items
+          subContentHtml = `
+            <div style="margin-top: 10px;">
+              <strong>Proposed Cycle:</strong> ${sub.data.weeklyCycle} Week Routine <br>
+              <div style="margin-top:10px; padding: 15px; border-radius:12px; background: rgba(255,255,255,0.03); border:1px solid var(--glass-border);">
+                <strong>Proposed Week 1 Menu Highlight (Monday):</strong> <br>
+                Breakfast: ${formatMealListDiff([], sub.data.menu.week1.monday.breakfast, true, false)} <br>
+                Lunch: ${formatMealListDiff([], sub.data.menu.week1.monday.lunch, true, false)} <br>
+                Dinner: ${formatMealListDiff([], sub.data.menu.week1.monday.dinner, true, false)}
+              </div>
+              <button type="button" class="btn" style="margin-top: 12px;" onclick="openWeeklyMenuForSubmission('${subId}', '${sub.data.name}', ${sub.data.weeklyCycle})">
+                View Full Proposed Menu
+              </button>
+            </div>
+          `;
+        } else if (sub.type === 'edit') {
+          // Render Side-by-Side Diff comparing current details vs proposed details
+          const currentPG = pgsList.find(p => p._id === sub.pgId);
+          
+          let currentPGDetails = '<em>PG deleted</em>';
+          let proposedPGDetails = '';
+          
+          if (currentPG) {
+            // Render diff fields
+            subContentHtml = `
+              <div class="diff-container">
+                <!-- Current PG Column -->
+                <div class="diff-column current">
+                  <div class="diff-column-title">Current PG Menu (Week 1 Monday)</div>
+                  <strong>PG Name:</strong> ${currentPG.name} <br>
+                  <strong>Schedule:</strong> ${currentPG.weeklyCycle} Week Cycle <br>
+                  <div style="margin-top:8px;">
+                    Breakfast: ${formatMealListDiff(currentPG.menu.week1.monday.breakfast, sub.data.menu.week1.monday.breakfast, false, true)} <br>
+                    Lunch: ${formatMealListDiff(currentPG.menu.week1.monday.lunch, sub.data.menu.week1.monday.lunch, false, true)} <br>
+                    Dinner: ${formatMealListDiff(currentPG.menu.week1.monday.dinner, sub.data.menu.week1.monday.dinner, false, true)}
+                  </div>
+                  <button type="button" class="btn" style="margin-top: 12px; padding: 6px 12px; font-size:12px;" onclick="openWeeklyMenuModal('${sub.pgId}')">
+                    View Full Current Menu
+                  </button>
+                </div>
+                <!-- Proposed Edits Column -->
+                <div class="diff-column proposed">
+                  <div class="diff-column-title">Proposed Edit (Week 1 Monday)</div>
+                  <strong>PG Name:</strong> ${sub.data.name} <br>
+                  <strong>Schedule:</strong> ${sub.data.weeklyCycle} Week Cycle <br>
+                  <div style="margin-top:8px;">
+                    Breakfast: ${formatMealListDiff(currentPG.menu.week1.monday.breakfast, sub.data.menu.week1.monday.breakfast, true, true)} <br>
+                    Lunch: ${formatMealListDiff(currentPG.menu.week1.monday.lunch, sub.data.menu.week1.monday.lunch, true, true)} <br>
+                    Dinner: ${formatMealListDiff(currentPG.menu.week1.monday.dinner, sub.data.menu.week1.monday.dinner, true, true)}
+                  </div>
+                  <button type="button" class="btn" style="margin-top: 12px; padding: 6px 12px; font-size:12px;" onclick="openWeeklyMenuForSubmission('${subId}', '${sub.data.name}', ${sub.data.weeklyCycle})">
+                    View Full Proposed Menu
+                  </button>
+                </div>
+              </div>
+            `;
+          }
+        }
+        
+        const submissionCard = `
+          <div class="submission-item glass-panel">
+            <div class="submission-item-header">
+              <div>
+                <span class="submission-type-badge ${sub.type}">${sub.type === 'new' ? 'New PG Addition' : 'Menu Edit Request'}</span>
+                <span style="font-size:16px; font-weight:600; margin-left: 10px;">${sub.data.name}</span>
+              </div>
+              <div class="submission-meta">
+                Submitted by: <strong>${sub.submittedBy}</strong> on ${subDate}
+              </div>
+            </div>
             
-            try {
-                const response = await fetch('/food');
-                const data = await response.json();
-                
-                
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to fetch menu');
-                }
+            ${subContentHtml}
+            
+            <div style="display:flex; justify-content: flex-end; gap:12px; margin-top: 20px; border-top:1px solid var(--glass-border); padding-top:15px;">
+              <button class="btn btn-danger" onclick="moderateSubmission('${subId}', 'reject')">Reject</button>
+              <button class="btn btn-success" onclick="moderateSubmission('${subId}', 'approve')">Approve & Publish</button>
+            </div>
+          </div>
+        `;
+        
+        submissionsContainer.innerHTML += submissionCard;
+      });
+    }
 
-                // Clear output
-                outputElement.innerHTML = '';
-                
-                // Validate items array
-                if (!data.items || !Array.isArray(data.items) || data.items.length === 0) {
-                    console.error('No items in data:', data);
-                    throw new Error('No food items available');
-                }
-                
-                
-                // Create food items HTML
-                const foodItemsHTML = data.items.map(item => {
-                    return `<div class="food-item">• ${item}</div>`;
-                }).join('');
-                
-                
-                // Create output HTML
-                const outputHTML = `
-                    <div class="separator"></div>
-                    <div class="menu-section">
-                        <div class="info-row">
-                            <span class="label">Day:</span> 
-                            <span class="value">${data.day.charAt(0).toUpperCase() + data.day.slice(1)}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">Meal Period:</span> 
-                            <span class="meal-badge ${getMealBadgeClass(data.meal)}">${formatMealName(data.meal)}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">Current Time (IST):</span> 
-                            <span class="value">${data.time}</span>
-                        </div>
-                    </div>
-                    <div class="separator"></div>
-                    <div class="menu-section">
-                        <div class="food-item-title">Available Items:</div>
-                        <div class="food-items">${foodItemsHTML}</div>
-                    </div>
-                    <div class="separator"></div>
-                    <div style="color: ${colors.comment}; font-size: 11px; margin-top: 4px;">
-                        Menu updated at: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-                    </div>
-                `;
-                
-                // Display output
-                outputElement.innerHTML = outputHTML;
-                
-                // Force reflow to ensure items are visible
-                outputElement.offsetHeight;
-                
-                
-            } catch (error) {
-                console.error('Error fetching menu:', error);
-                outputElement.innerHTML = `
-                    <div class="error">
-                        <div style="margin-bottom: 8px;">Error: ${error.message}</div>
-                        <div style="color: ${colors.comment}; font-size: 12px;">
-                            Make sure the API is running and accessible.
-                        </div>
-                    </div>
-                `;
-            }
+    // Approve/Reject Submission Action
+    async function moderateSubmission(subId, action) {
+      const endpoint = `/api/submissions/${subId}/${action}`;
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert(`Submission ${action}d successfully!`);
+          // Re-fetch list
+          await fetchPGs();
+          await fetchAndRenderSubmissions();
+        } else {
+          alert('Moderation failed: ' + data.error);
         }
+      } catch (err) {
+        console.error(`Error during submission ${action}:`, err);
+      }
+    }
 
-        // Fetch menu on page load
-        fetchMenu();
-    </script>
+    // Window size monitoring to dynamically adjust views
+    window.addEventListener('resize', () => {
+      if (window.innerWidth <= 768 && currentView === 'board') {
+        setView('grid');
+      }
+    });
+
+    // Start App
+    window.onload = init;
+  </script>
 </body>
 </html>
