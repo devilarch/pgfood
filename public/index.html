@@ -1524,46 +1524,99 @@
             </div>
           `;
         } else if (sub.type === 'edit') {
-          // Render Side-by-Side Diff comparing current details vs proposed details
           const currentPG = pgsList.find(p => p._id === sub.pgId);
           
-          let currentPGDetails = '<em>PG deleted</em>';
-          let proposedPGDetails = '';
-          
           if (currentPG) {
-            // Render diff fields
-            subContentHtml = `
-              <div class="diff-container">
-                <!-- Current PG Column -->
-                <div class="diff-column current">
-                  <div class="diff-column-title">Current PG Menu (Week 1 Monday)</div>
-                  <strong>PG Name:</strong> ${currentPG.name} <br>
-                  <strong>Schedule:</strong> ${currentPG.weeklyCycle} Week Cycle <br>
-                  <div style="margin-top:8px;">
-                    Breakfast: ${formatMealListDiff(currentPG.menu.week1.monday.breakfast, sub.data.menu.week1.monday.breakfast, false, true)} <br>
-                    Lunch: ${formatMealListDiff(currentPG.menu.week1.monday.lunch, sub.data.menu.week1.monday.lunch, false, true)} <br>
-                    Dinner: ${formatMealListDiff(currentPG.menu.week1.monday.dinner, sub.data.menu.week1.monday.dinner, false, true)}
-                  </div>
-                  <button type="button" class="btn" style="margin-top: 12px; padding: 6px 12px; font-size:12px;" onclick="openWeeklyMenuModal('${sub.pgId}')">
-                    View Full Current Menu
-                  </button>
+            // Calculate changes
+            const diffs = [];
+            DAYS.forEach(day => {
+              ['breakfast', 'lunch', 'dinner'].forEach(meal => {
+                const currentMeals = (currentPG.menu && currentPG.menu.week1 && currentPG.menu.week1[day] && currentPG.menu.week1[day][meal]) || [];
+                const proposedMeals = (sub.data.menu && sub.data.menu.week1 && sub.data.menu.week1[day] && sub.data.menu.week1[day][meal]) || [];
+                
+                const curStr = currentMeals.join(', ');
+                const propStr = proposedMeals.join(', ');
+                
+                if (curStr.trim().toLowerCase() !== propStr.trim().toLowerCase()) {
+                  diffs.push({ week: 1, day, meal, current: curStr || 'None', proposed: propStr || 'None' });
+                }
+              });
+            });
+            
+            if (currentPG.weeklyCycle === 2 || sub.data.weeklyCycle === 2) {
+              DAYS.forEach(day => {
+                ['breakfast', 'lunch', 'dinner'].forEach(meal => {
+                  const currentMeals = (currentPG.menu && currentPG.menu.week2 && currentPG.menu.week2[day] && currentPG.menu.week2[day][meal]) || [];
+                  const proposedMeals = (sub.data.menu && sub.data.menu.week2 && sub.data.menu.week2[day] && sub.data.menu.week2[day][meal]) || [];
+                  
+                  const curStr = currentMeals.join(', ');
+                  const propStr = proposedMeals.join(() => {
+                    return Array.isArray(proposedMeals) ? proposedMeals.join(', ') : '';
+                  });
+                  
+                  // Fix joins
+                  const resolvedPropStr = Array.isArray(proposedMeals) ? proposedMeals.join(', ') : propStr;
+                  
+                  if (curStr.trim().toLowerCase() !== resolvedPropStr.trim().toLowerCase()) {
+                    diffs.push({ week: 2, day, meal, current: curStr || 'None', proposed: resolvedPropStr || 'None' });
+                  }
+                });
+              });
+            }
+
+            let changesHtml = '';
+            if (currentPG.name !== sub.data.name) {
+              changesHtml += `
+                <div style="margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--glass-border);">
+                  <strong style="color: var(--accent-orange);">Name:</strong> 
+                  <span style="color: var(--accent-red); text-decoration: line-through;">${currentPG.name}</span>
+                  <span style="margin: 0 6px;">➔</span>
+                  <span style="color: var(--accent-green); font-weight: 600;">${sub.data.name}</span>
                 </div>
-                <!-- Proposed Edits Column -->
-                <div class="diff-column proposed">
-                  <div class="diff-column-title">Proposed Edit (Week 1 Monday)</div>
-                  <strong>PG Name:</strong> ${sub.data.name} <br>
-                  <strong>Schedule:</strong> ${sub.data.weeklyCycle} Week Cycle <br>
-                  <div style="margin-top:8px;">
-                    Breakfast: ${formatMealListDiff(currentPG.menu.week1.monday.breakfast, sub.data.menu.week1.monday.breakfast, true, true)} <br>
-                    Lunch: ${formatMealListDiff(currentPG.menu.week1.monday.lunch, sub.data.menu.week1.monday.lunch, true, true)} <br>
-                    Dinner: ${formatMealListDiff(currentPG.menu.week1.monday.dinner, sub.data.menu.week1.monday.dinner, true, true)}
+              `;
+            }
+            if (currentPG.weeklyCycle !== sub.data.weeklyCycle) {
+              changesHtml += `
+                <div style="margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--glass-border);">
+                  <strong style="color: var(--accent-orange);">Routine Cycle:</strong> 
+                  <span style="color: var(--accent-red); text-decoration: line-through;">${currentPG.weeklyCycle} Week</span>
+                  <span style="margin: 0 6px;">➔</span>
+                  <span style="color: var(--accent-green); font-weight: 600;">${sub.data.weeklyCycle} Week</span>
+                </div>
+              `;
+            }
+
+            if (diffs.length === 0 && changesHtml === '') {
+              changesHtml = '<div style="color: var(--text-secondary); font-style: italic;">No changes detected.</div>';
+            } else {
+              diffs.forEach(d => {
+                changesHtml += `
+                  <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--glass-border); line-height: 1.5; font-size: 13px;">
+                    <strong style="color: var(--accent-orange); text-transform: capitalize;">
+                      Week ${d.week} - ${d.day} (${d.meal}):
+                    </strong> <br>
+                    <span style="color: var(--accent-red); text-decoration: line-through;">${d.current}</span>
+                    <span style="margin: 0 8px; color: var(--text-secondary);">➔</span>
+                    <span style="color: var(--accent-green); font-weight: 600;">${d.proposed}</span>
                   </div>
-                  <button type="button" class="btn" style="margin-top: 12px; padding: 6px 12px; font-size:12px;" onclick="openWeeklyMenuForSubmission('${subId}', '${sub.data.name}', ${sub.data.weeklyCycle})">
-                    View Full Proposed Menu
-                  </button>
+                `;
+              });
+            }
+
+            subContentHtml = `
+              <div style="margin-top: 15px;">
+                <h4 style="margin-bottom: 12px; font-weight: 600; font-size: 14px;">Review Requested Changes:</h4>
+                <div style="padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); max-height: 250px; overflow-y: auto;">
+                  ${changesHtml}
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 12px;">
+                  <button type="button" class="btn" style="font-size: 12px; padding: 6px 12px;" onclick="openWeeklyMenuModal('${sub.pgId}')">View Full Current Menu</button>
+                  <button type="button" class="btn" style="font-size: 12px; padding: 6px 12px;" onclick="openWeeklyMenuForSubmission('${sub._id}', '${sub.data.name}', ${sub.data.weeklyCycle})">View Full Proposed Menu</button>
                 </div>
               </div>
             `;
+          } else {
+            subContentHtml = `<div style="margin-top: 15px; color: var(--accent-red); font-style: italic;">Associated PG has been deleted.</div>`;
           }
         }
         
