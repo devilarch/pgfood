@@ -51,7 +51,7 @@
 
       <!-- Favorites Filter Toggle -->
       <button class="btn" id="fav-filter-btn">
-        <span class="star-icon">☆</span> Favorites
+        <span class="star-icon">☆</span> <span class="btn-text">Favorites</span>
       </button>
 
       <!-- Submit New PG Button -->
@@ -60,17 +60,17 @@
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
-        Submit PG
+        <span class="btn-text">Submit PG</span>
       </button>
 
       <!-- Admin Dashboard Toggle (Hidden by default) -->
       <button class="btn" id="admin-panel-btn" style="display: none; border-color: var(--accent-orange); color: var(--accent-orange);">
-        Admin panel
+        🛡 <span class="btn-text">Admin Panel</span>
       </button>
 
       <!-- Authentication Section -->
       <div id="auth-section">
-        <button class="btn" id="login-btn">Login</button>
+        <button class="btn" id="login-btn">👤 <span class="btn-text">Login</span></button>
       </div>
     </div>
   </header>
@@ -372,9 +372,11 @@
       if (currentUser) {
         authSection.innerHTML = `
           <div class="user-badge">
-            <span style="font-weight:600;">${currentUser.username}</span>
-            ${currentUser.role === 'admin' ? '<span class="user-badge-role">Admin</span>' : ''}
-            <button class="btn" style="padding: 4px 10px; border-radius: 12px; font-size:11px; margin-left: 10px;" id="logout-btn">Logout</button>
+            <span style="font-weight:600;" class="btn-text">${currentUser.username}</span>
+            ${currentUser.role === 'admin' ? '<span class="user-badge-role btn-text">Admin</span>' : ''}
+            <button class="btn" style="padding: 6px 10px; border-radius: 10px; font-size:12px; margin-left: 6px;" id="logout-btn" title="Logout">
+              ↩ <span class="btn-text">Logout</span>
+            </button>
           </div>
         `;
         document.getElementById('logout-btn').addEventListener('click', logout);
@@ -386,7 +388,7 @@
           adminPanelBtn.style.display = 'none';
         }
       } else {
-        authSection.innerHTML = `<button class="btn" id="login-btn">Login</button>`;
+        authSection.innerHTML = `<button class="btn" id="login-btn">👤 <span class="btn-text">Login</span></button>`;
         document.getElementById('login-btn').addEventListener('click', () => openAuthModal('login'));
         adminPanelBtn.style.display = 'none';
         adminDashboard.style.display = 'none';
@@ -967,10 +969,10 @@
     // Favorites Filter Button State update
     function updateFavoritesFilterBtn() {
       if (filterFavoritesOnly) {
-        favFilterBtn.innerHTML = '<span class="star-icon">★</span> Favorites';
+        favFilterBtn.innerHTML = '<span class="star-icon">★</span> <span class="btn-text">Favorites</span>';
         favFilterBtn.classList.add('btn-primary');
       } else {
-        favFilterBtn.innerHTML = '<span class="star-icon">☆</span> Favorites';
+        favFilterBtn.innerHTML = '<span class="star-icon">☆</span> <span class="btn-text">Favorites</span>';
         favFilterBtn.classList.remove('btn-primary');
       }
     }
