@@ -138,7 +138,7 @@ body {
 
 /* Base App Header Layout */
 .app-header {
-  padding: 20px 40px;
+  padding: 20px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -146,8 +146,8 @@ body {
   top: 0;
   z-index: 100;
   margin: 15px auto;
-  max-width: 1400px;
-  width: 95%;
+  max-width: 100%;
+  width: 96%;
 }
 
 .logo {
@@ -292,8 +292,8 @@ body {
 
 /* App Main Container */
 .app-container {
-  max-width: 1400px;
-  width: 95%;
+  max-width: 100%;
+  width: 96%;
   margin: 0 auto 50px auto;
   min-height: calc(100vh - 150px);
   position: relative;
