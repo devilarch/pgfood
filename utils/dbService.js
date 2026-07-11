@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const { User, PG, Submission } = require('../models/models');
+const { User, PG, Submission, RefreshToken } = require('../models/models');
 
 const JSON_DB_DIR = path.join(__dirname, '..', 'data');
 const JSON_DB_PATH = path.join(JSON_DB_DIR, 'db.json');
@@ -20,7 +20,7 @@ function readJsonDB() {
     if (!fs.existsSync(JSON_DB_DIR)) {
       fs.mkdirSync(JSON_DB_DIR, { recursive: true });
     }
-    const initialData = { users: [], pgs: [], submissions: [] };
+    const initialData = { users: [], pgs: [], submissions: [], refreshTokens: [] };
     fs.writeFileSync(JSON_DB_PATH, JSON.stringify(initialData, null, 2), 'utf8');
     return initialData;
   }
@@ -340,6 +340,55 @@ async function deletePG(id) {
   }
 }
 
+// Save Refresh Token
+async function saveRefreshToken(token, userId, expiresAt) {
+  if (useMongoDB) {
+    const rt = new RefreshToken({ token, userId, expiresAt });
+    return await rt.save();
+  } else {
+    const db = readJsonDB();
+    if (!db.refreshTokens) db.refreshTokens = [];
+    const newRt = {
+      _id: generateId(),
+      token,
+      userId: userId.toString(),
+      expiresAt: expiresAt.toISOString(),
+      createdAt: new Date().toISOString()
+    };
+    db.refreshTokens.push(newRt);
+    writeJsonDB(db);
+    return newRt;
+  }
+}
+
+// Find Refresh Token
+async function findRefreshToken(token) {
+  if (useMongoDB) {
+    return await RefreshToken.findOne({ token });
+  } else {
+    const db = readJsonDB();
+    if (!db.refreshTokens) db.refreshTokens = [];
+    const found = db.refreshTokens.find(rt => rt.token === token);
+    if (!found) return null;
+    return {
+      ...found,
+      expiresAt: new Date(found.expiresAt)
+    };
+  }
+}
+
+// Delete Refresh Token
+async function deleteRefreshToken(token) {
+  if (useMongoDB) {
+    await RefreshToken.deleteOne({ token });
+  } else {
+    const db = readJsonDB();
+    if (!db.refreshTokens) db.refreshTokens = [];
+    db.refreshTokens = db.refreshTokens.filter(rt => rt.token !== token);
+    writeJsonDB(db);
+  }
+}
+
 module.exports = {
   connectDB,
   getPGs,
@@ -355,5 +404,8 @@ module.exports = {
   getSubmissions,
   getSubmissionById,
   updateSubmissionStatus,
+  saveRefreshToken,
+  findRefreshToken,
+  deleteRefreshToken,
   getUseMongoDB: () => useMongoDB
 };

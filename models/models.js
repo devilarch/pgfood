@@ -89,8 +89,27 @@ const SubmissionSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+// Refresh Token Schema
+const RefreshTokenSchema = new mongoose.Schema({
+  token: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  expiresAt: {
+    type: Date,
+    required: true
+  }
+}, { timestamps: true });
+
 module.exports = {
   User: mongoose.models.User || mongoose.model('User', UserSchema),
   PG: mongoose.models.PG || mongoose.model('PG', PGSchema),
-  Submission: mongoose.models.Submission || mongoose.model('Submission', SubmissionSchema)
+  Submission: mongoose.models.Submission || mongoose.model('Submission', SubmissionSchema),
+  RefreshToken: mongoose.models.RefreshToken || mongoose.model('RefreshToken', RefreshTokenSchema)
 };

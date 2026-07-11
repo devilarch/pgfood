@@ -227,6 +227,69 @@
     let filterFavoritesOnly = false;
     let authMode = 'login'; // 'login' or 'register'
     let tempSubmissionMenus = {};
+
+    // Wrapper for fetch to handle access token expiry & refresh token rotation
+    async function authenticatedFetch(url, options = {}) {
+      if (!options.headers) {
+        options.headers = {};
+      }
+      
+      if (token) {
+        options.headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      let response = await fetch(url, options);
+      
+      if (response.status === 401 && localStorage.getItem('refreshToken')) {
+        const refreshed = await attemptTokenRefresh();
+        if (refreshed) {
+          options.headers['Authorization'] = `Bearer ${token}`;
+          response = await fetch(url, options);
+        }
+      }
+      
+      return response;
+    }
+
+    let isRefreshing = false;
+    async function attemptTokenRefresh() {
+      if (isRefreshing) return false;
+      isRefreshing = true;
+      
+      const storedRefreshToken = localStorage.getItem('refreshToken');
+      if (!storedRefreshToken) {
+        isRefreshing = false;
+        return false;
+      }
+      
+      try {
+        const response = await fetch('/api/auth/refresh', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ refreshToken: storedRefreshToken })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          token = data.token;
+          localStorage.setItem('token', token);
+          localStorage.setItem('refreshToken', data.refreshToken);
+          isRefreshing = false;
+          return true;
+        } else {
+          console.warn('Session expired. Logging out.');
+          isRefreshing = false;
+          logout(true);
+          return false;
+        }
+      } catch (err) {
+        console.error('Network error during token refresh:', err);
+        isRefreshing = false;
+        return false;
+      }
+    }
     
     // Day/Meal translation helper based on IST rules
     const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -350,16 +413,13 @@
     // Fetch Logged-in User Info
     async function fetchUserProfile() {
       try {
-        const response = await fetch('/api/auth/me', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const response = await authenticatedFetch('/api/auth/me');
         if (response.ok) {
           const data = await response.json();
           currentUser = data.user;
           favoritesList = currentUser.favorites || [];
           updateAuthUI();
         } else {
-          // Token expired or invalid
           logout();
         }
       } catch (err) {
@@ -401,13 +461,32 @@
     }
 
     // Log out user
-    function logout() {
+    async function logout(forced = false) {
+      const storedRefreshToken = localStorage.getItem('refreshToken');
+      if (storedRefreshToken && !forced) {
+        try {
+          await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refreshToken: storedRefreshToken })
+          });
+        } catch (err) {
+          console.error('Logout request failed:', err);
+        }
+      }
+      
       token = null;
       currentUser = null;
       favoritesList = [];
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       updateAuthUI();
       renderPGs();
+      
+      if (forced) {
+        alert('Your session has expired. Please log in again.');
+        openAuthModal('login');
+      }
     }
 
     // Fetch PGs list from DB
@@ -701,11 +780,10 @@
       }
       
       try {
-        const response = await fetch('/api/auth/favorites', {
+        const response = await authenticatedFetch('/api/auth/favorites', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ favorites: updatedFavs })
         });
@@ -728,11 +806,8 @@
       }
       
       try {
-        const response = await fetch(`/api/pgs/${pgId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+        const response = await authenticatedFetch(`/api/pgs/${pgId}`, {
+          method: 'DELETE'
         });
         
         const data = await response.json();
@@ -952,6 +1027,7 @@
           currentUser = data.user;
           favoritesList = currentUser.favorites || [];
           localStorage.setItem('token', token);
+          localStorage.setItem('refreshToken', data.refreshToken);
           
           updateAuthUI();
           authDialog.close();
@@ -1130,15 +1206,9 @@
         }
       });
       
-      try {
-        const headers = { 'Content-Type': 'application/json' };
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-        
-        const response = await fetch('/api/pgs/submit', {
+        const response = await authenticatedFetch('/api/pgs/submit', {
           method: 'POST',
-          headers,
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, weeklyCycle: cycle, menu })
         });
         
@@ -1435,9 +1505,7 @@
 
     async function fetchAndRenderSubmissions() {
       try {
-        const response = await fetch('/api/submissions', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const response = await authenticatedFetch('/api/submissions');
         
         if (response.ok) {
           const submissions = await response.json();
@@ -1649,16 +1717,14 @@
     async function moderateSubmission(subId, action) {
       const endpoint = `/api/submissions/${subId}/${action}`;
       try {
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` }
+        const response = await authenticatedFetch(endpoint, {
+          method: 'POST'
         });
         
         const data = await response.json();
         
         if (response.ok) {
           alert(`Submission ${action}d successfully!`);
-          // Re-fetch list
           await fetchPGs();
           await fetchAndRenderSubmissions();
         } else {
