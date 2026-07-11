@@ -1205,7 +1205,7 @@
           menu.week2[day] = { breakfast: [], lunch: [], dinner: [] };
         }
       });
-      
+      try {
         const response = await authenticatedFetch('/api/pgs/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1437,13 +1437,11 @@
           menu.week2[day] = { breakfast: [], lunch: [], dinner: [] };
         }
       });
-      
       try {
-        const response = await fetch('/api/pgs/edit-request', {
+        const response = await authenticatedFetch('/api/pgs/edit-request', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ pgId: activeEditPGId, name, weeklyCycle: cycle, menu })
         });
