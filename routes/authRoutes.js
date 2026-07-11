@@ -27,8 +27,8 @@ router.post('/register', async (req, res) => {
     // Create user (role defaults to 'user')
     const user = await dbService.createUser(username, password);
 
-    // Generate JWT (Access Token) - short lived (15m)
-    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '15m' });
+    // Generate JWT (Access Token) - 7 days expiry
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
 
     // Generate Refresh Token - long lived (30 days)
     const refreshToken = crypto.randomBytes(40).toString('hex');
@@ -77,8 +77,8 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Invalid username or password.' });
     }
 
-    // Generate JWT (Access Token) - short lived (15m)
-    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '15m' });
+    // Generate JWT (Access Token) - 7 days expiry
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
 
     // Generate Refresh Token - long lived (30 days)
     const refreshToken = crypto.randomBytes(40).toString('hex');
@@ -136,7 +136,7 @@ router.post('/refresh', async (req, res) => {
     }
 
     // Generate new Access Token
-    const newAccessToken = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '15m' });
+    const newAccessToken = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
 
     // Rotate Refresh Token: delete the old one, generate a new one
     await dbService.deleteRefreshToken(refreshToken);
